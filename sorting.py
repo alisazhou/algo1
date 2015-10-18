@@ -74,13 +74,87 @@ def bubble_sort(toSort):
     return toSort
 
 
-
-def quicksort(toSort):
+compsFirst = 0
+def quicksort_first(toSort):
     n = len(toSort)
+    global compsFirst
     if n <= 1:
         return toSort
     else:
         pivot = toSort[0]
-        i = 1
+        toSort, p = partition(toSort)
+        left = quicksort_first(toSort[:p])
+        compsFirst += p - 1
+        right = quicksort_first(toSort[p+1:])
+        compsFirst += n - p
+    sorted = left + right
+    sorted.insert(p, pivot)
+    return sorted
+
+def partition(aList):
+    pivot = aList[0]
+    i = 1
+    j = 1
+    for elem in aList[1:]:
+        if elem > pivot:
+            j += 1
+        else:
+            aList[i], aList[j] = aList[j], aList[i]
+            i += 1
+            j += 1
+    aList[0], aList[i-1] = aList[i-1], aList[0]
+    return aList, i-1
+
+compsLast = 0
+def quicksort_last(toSort):
+    n = len(toSort)
+    global compsLast
+    if n <= 1:
+        return toSort
+    else:
+        toSort[0], toSort[-1] = toSort[-1], toSort[0]
+        pivot = toSort[0]
+        toSort, p = partition(toSort)
+        left = quicksort_last(toSort[:p])
+        compsLast += p - 1
+        right = quicksort_last(toSort[p+1:])
+        compsLast += n - p
+    sorted = left + right
+    sorted.insert(p, pivot)
+    return sorted
+
+compsMedian = 0
+def quicksort_median(toSort):
+    n = len(toSort)
+    global compsMedian
+    if n <= 1:
+        return toSort
+    else:
+        mid = (n+1)//2 - 1
+        if toSort[0] < toSort[-1]:
+            if toSort[mid] < toSort[0]:
+                p = 0
+            elif toSort[mid] > toSort[-1]:
+                p = -1
+            else:
+                p = mid
+        else:
+            if toSort[mid] > toSort[0]:
+                p = 0
+            elif toSort[mid] < toSort[-1]:
+                p = -1
+            else:
+                p = mid
         
-    return toSort
+        toSort[0], toSort[p] = toSort[p], toSort[0]
+        pivot = toSort[0]
+        toSort, p = partition(toSort)
+        left = quicksort_median(toSort[:p])
+        compsMedian += p - 1
+        right = quicksort_median(toSort[p+1:])
+        compsMedian += n - p
+    sorted = left + right
+    sorted.insert(p, pivot)
+    return sorted
+            
+    
