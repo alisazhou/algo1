@@ -1,3 +1,5 @@
+import time
+
 
 def reverse_arcs(file):
     arcs = {}
@@ -9,6 +11,7 @@ def reverse_arcs(file):
             else:
                 arcs[tail] = [head]
     return arcs
+
 
 
 
@@ -30,8 +33,8 @@ def scc_loop(graph, qtyNodes):
     label = 1
     leadersList = {}
     for i in range(qtyNodes, 0, -1):
-        if i in graph and i not in visited:
-            minions = []
+        if i not in visited:
+            minions = [i]
             visited, label, minions = scc_dfs(graph, i, visited, label, minions)
             leadersList[i] = minions
     return visited, leadersList
@@ -54,21 +57,31 @@ def node_to_label(oldGraph, labels):
 def scc_main(file):
     # reverse graph
     qtyNodes = int(input("how many nodes? "))
+    startTime = time.time()
     graphRev = reverse_arcs(file)
+    print("--- reverse_arcs() took %s seconds ---" % (time.time() - startTime))
     
     # call scc_loop(graphRev)
+    startTime = time.time()
     nodesLabelled, leadersList = scc_loop(graphRev, qtyNodes)
+    print("--- 1st pass took %s seconds ---" % (time.time() - startTime))
     leadersList = None    # save memory
+
     # update graph using nodes' labels
+    startTime = time.time()
     newGraph = node_to_label(graphRev, nodesLabelled)
+    print("--- node_to_label() took %s seconds ---" % (time.time() - startTime))
     """graphRev popitem()-ed in sub-routine, and is now zero in main as well"""
     nodesLabelled = None
     
     # call scc_loop(graph) with labels changed
+    startTime = time.time()
     nodesLabelled, leaders = scc_loop(newGraph, qtyNodes)
+    print("--- 2nd pass took %s seconds ---" % (time.time() - startTime))
     nodesLabelled = None
     
     # dfs on newGraph, start w/ leader, only nodes in its scc would be discovered
+    startTime = time.time()
     bigFive = [0, 0, 0, 0, 0]
     leadersList = []
     while leaders:
@@ -78,29 +91,14 @@ def scc_main(file):
     while leadersList:
         start = leadersList.pop()
         visited, disregard, scc = scc_dfs(newGraph, start, visited, 0, [])
-        size = len(scc) + 1    # plus the leader itself
+        size = len(scc) + 1
         if size > bigFive[-1]:
             bigFive.pop()
             bigFive.append(size)
             bigFive.sort(reverse=True)
+    print("--- comparing scc sizes took %s seconds ---" % (time.time() - startTime))
     return bigFive
 
 
-
-"""testcase =
-{1: [2, 3],
- 2: [4],
- 3: [4]}
- 
- 
-{1: [2],
- 2: [3],
- 3: [5],
- 4: [2],
- 5: [4, 6]}
- 
-{1: [2, 3, 4],
- 2: [4, 5],
- 3: [5],
- 5: [4]}
-"""
+if __name__ == "__main__":
+    scc_main("SCC.txt")
