@@ -84,7 +84,7 @@ def dfs_loop(graph, qtyNodes, pass2=False):
                     bigFive.pop()
                     bigFive.append(minions)
                     bigFive.sort(reverse=True)
-        if i % 1000 == 0:
+        if i % 100000 == 0:
             print("--- at node %s, took %s seconds ----"
                   % (i, time.time() - timeStamp)
                  )
