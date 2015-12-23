@@ -15,10 +15,14 @@ def reverse_arcs(file):
 def node_to_label(oldGraph, labels):
     newGraph = {}
     while oldGraph:
-        head, adjTails = oldGraph.popitem()
-        newTail = labels[head]
+        _, adjTails = oldGraph.popitem()
+        newTail = labels[_]
         for head in adjTails:
             newHead = labels[head]
+            """yea so if you do "newGraph = defaultdict(list)"
+            then can just do newgraph[newhead].append(newtail) 
+            instead of checkign if it is an existing key
+            """
             if newHead in newGraph:
                 newGraph[newHead].append(newTail)
             else:
@@ -43,6 +47,8 @@ def dfs(graph, start, explored, label):
                 explored[w] = 'undiscovered'
                 nodeStack.append(w)
                 allDiscovered = False
+            elif explored[w] == 'undiscovered':
+                allDiscovered = False
         # if not all discovered, append v to path, continue with popping stack
         if not allDiscovered:
             path.append(v)
@@ -57,6 +63,7 @@ def dfs(graph, start, explored, label):
                 # are all of the predecessor's adj nodes discovered?
                 allDiscovered2 = True
                 for sib in siblings:
+                    if sib not in explored or explored[sib] == "undiscovered":
                         allDiscovered2 = False
                         break
                 # if not all discovered, replace pred in path, continue w/ stack
@@ -69,6 +76,7 @@ def dfs(graph, start, explored, label):
                     label += 1
                     minions += 1
     return explored, label, minions
+
 
 
 def dfs_loop(graph, qtyNodes, pass2=False):
@@ -84,10 +92,6 @@ def dfs_loop(graph, qtyNodes, pass2=False):
                     bigFive.pop()
                     bigFive.append(minions)
                     bigFive.sort(reverse=True)
-        if i % 100000 == 0:
-            print("--- at node %s, took %s seconds ----"
-                  % (i, time.time() - timeStamp)
-                 )
     if pass2:
         return bigFive
     else:
@@ -96,20 +100,23 @@ def dfs_loop(graph, qtyNodes, pass2=False):
 
 def scc_main(file, qtyNodes):
 
-    start_time = time.time()
     graphRev = reverse_arcs(file)
-    print("---reverse %s seconds---" % (time.time() - start_time))
     
     start_time = time.time()
     label = dfs_loop(graphRev, qtyNodes)
-    print("---pass1 %s seconds---" % (time.time() - start_time))
     
     start_time = time.time()
     newGraph = node_to_label(graphRev, label)
-    print("---labelling %s seconds---" % (time.time() - start_time))
     
     start_time = time.time()
     bigFive = dfs_loop(newGraph, qtyNodes, pass2=True)
-    print("---pass2 %s seconds---" % (time.time() - start_time))
     
     return bigFive
+
+
+if __name__ == "__main__":
+    start_time = time.time()
+    ans = scc_main("SCC.txt", 875714)
+    print("And how many minions are we dealing with??? Ans:", ans)
+    print("---total %s seconds---" % (time.time() - start_time))
+    
