@@ -19,6 +19,7 @@ def get_graph(file):
             graph[vertex] = edges
     return graph
 
+
 def dijkstra_shortest_path(graph):
     """Naive implementation of Dijkstra's Algo, O(mn) time.
 
@@ -55,9 +56,12 @@ def dijkstra_shortest_path(graph):
 
 
 if __name__ == "__main__":
+    import time
+    startTime = time.time()
     graph = get_graph("dijkstraData.txt")
     distances = dijkstra_shortest_path(graph)
     nodesNeeded = [7, 37, 59, 82, 99, 115, 133, 165, 188, 197]
     for node in nodesNeeded:
         print(node, distances[node])
+    print("---- %s seconds ----" % (time.time() - startTime))
     """answer: 2599,2610,2947,2052,2367,2399,2029,2442,2505,3068"""

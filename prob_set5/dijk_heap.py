@@ -5,7 +5,7 @@ def get_graph(file):
     
     Keys are nodes, values are tuples of adjacent edges and lengths.
     The second elem of each tuple is the edge's head, the first elem is
-    the edge's length, the third element repeats the node itself.
+    the edge's length.
     """
     graph = {}
     with open(file) as f:
@@ -16,7 +16,7 @@ def get_graph(file):
             edgesStr = node[1:]
             for edge in edgesStr:
                 _, __ = edge.split(',')
-                edgeTup = (int(__), int(_), vertex)
+                edgeTup = (int(__), int(_))
                 edges.append(edgeTup)
             graph[vertex] = edges
     return graph
@@ -30,26 +30,42 @@ def dijkstra_shortest_path(graph):
     node. By invariant, the extract_min yields the correct vertex wStar
     to add to processed next, and then set A[wStar] to key[wStar].
     """
-    processedNodes = [1]
     distances = {1:0}
     path = {1:[]}
-    greedyScoreHeap = graph[1]
-    heapify(greedyScoreHeap)
-    
-    while len(processedNodes) < len(graph):
+    greedyScoreHeap = []
+    for edgeLen, tail in graph[1]:
+        heappush(greedyScoreHeap, (edgeLen, tail, 1))
+    removedFromHeap = []
+
+    while len(distances) < len(graph):
         # heappop to get the min value of all Dijk scores
+        while True:
+            sourceToWstar, wstar, vstar = heappop(greedyScoreHeap)
+            if wstar not in removedFromHeap:
+                break
         # add popped node to processed nodes
-        dijkScore, wStar, vStar = heappop(greedyScoreHeap)
-        processedNodes.append(wStar)
-        distances[wStar] = dijkScore
-        path[wStar] = path[vStar] + [v]
-        # delete arcs that no long "cross", ie used to point to wStar
-        
+        distances[wstar] = sourceToWstar
+        path[wstar] = path[vstar] + [vstar]
+        # delete arcs that no longer "cross", ie used to point to wStar
+        removedFromHeap.append(wstar)
         # new crossing edges, ie point from wStar to unprocessed nodes
-        # calculate new Dijk score for each now with wStar in processed
-        # if node not in heap, add its Dijk score to heap
-        # if node already in heap, update its Dijk score if necessary
-        
-    # for each unprocessed node, find their greedy Dijkstra score
-    # insert node into heap, using Dijk score as key
-    # then for all crossing edges, choose node with min Dijk score
+        for edgeLen, node in graph[wstar]:
+            # only if node has not been processed
+            if node not in distances:
+                sourceToNode = sourceToWstar + edgeLen
+                heappush(greedyScoreHeap, (sourceToNode, node, wstar))
+
+    return distances
+
+
+
+if __name__ == "__main__":
+    import time
+    startTime = time.time()
+    graph = get_graph("dijkstraData.txt")
+    distances = dijkstra_shortest_path(graph)
+    nodesNeeded = [7, 37, 59, 82, 99, 115, 133, 165, 188, 197]
+    for node in nodesNeeded:
+        print(node, distances[node])
+    print("---- %s seconds ----" % (time.time() - startTime))
+    """answer: 2599,2610,2947,2052,2367,2399,2029,2442,2505,3068"""
