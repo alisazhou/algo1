@@ -1,4 +1,6 @@
-from bisect import bisect_left
+import time
+from bisect import bisect_right
+
 
 def sort_ints(file_ints):
     """Read integers from file and return a sorted array of the integers.
@@ -24,16 +26,7 @@ def count_targets(searchList):
     Return count of possible target sums.
     """
     count = 0
-    n = len(searchList)
-    stop1 = time.time()
-    for t in range(-10000, 10001):
-        for x in searchList:
-            if t - x <= x:
-                break
-            i = bisect_left(searchList, t - x, hi=n-1)
-            if searchList[i] == t - x:
-                count += 1
-                break
+
     return count
 
 
@@ -42,5 +35,5 @@ if __name__ == "__main__":
     startTime = time.time()
     l = sort_ints("prob6.txt")
     ans = count_targets(l)
+    print("--- took %s seconds ---" % (time.time() - startTime))
     print("the answer is", ans)
-    """Takes 3x the amount of time than the original script."""
