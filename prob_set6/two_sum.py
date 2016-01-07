@@ -1,5 +1,3 @@
-import time
-
 def hash_ints(file_ints):
     """Insert all integers in the file into a hash table.
     
@@ -20,9 +18,6 @@ def count_targets(hashedInts):
     count = 0
     stop1 = time.time()
     for t in range(-10000, 10001):
-        if t % 100 == 0:
-            print("--- %s seconds ---" % (time.time() - stop1))
-            stop1 = time.time()
         for k in hashedInts:
             if (t - k) in hashedInts and (t - k) != k:
                 count += 1
@@ -32,8 +27,7 @@ def count_targets(hashedInts):
 
 
 if __name__ == "__main__":
-    startTime = time.time()
+    """took 5703 seconds to run on work computer"""
     d = hash_ints("prob6.txt")
     ans = count_targets(d)
-    print("------- %s seconds in total -------" % (time.time() - startTime))
     print("the answer is", ans)
