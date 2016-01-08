@@ -1,4 +1,3 @@
-import time
 from bisect import bisect_left
 
 
@@ -55,5 +54,5 @@ if __name__ == "__main__":
     startTime = time.time()
     l = sort_ints("prob6.txt")
     ans = count_targets(l)
-    print("--- took %s seconds ---" % (time.time() - startTime))
     print("the answer is", ans)
+    """took 6820s"""

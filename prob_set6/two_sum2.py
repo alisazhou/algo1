@@ -43,4 +43,4 @@ if __name__ == "__main__":
     l = sort_ints("prob6.txt")
     ans = count_targets(l)
     print("the answer is", ans)
-    """Takes 3x the amount of time than the original script."""
+    """Took 3x the amount of time than the original script, 16517 secs."""
